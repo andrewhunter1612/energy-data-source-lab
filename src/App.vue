@@ -1,28 +1,46 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <user-inputs />
+    <display-charts :mix="energyData"/>
+  
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import DisplayVue from './components/Display.vue'
+import UserInputsVue from './components/UserInputs.vue'
+  export default {
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+    data(){
+      return {
+        energyData: [['biomass', 'perc']]
+      }
+    },
+
+    mounted(){
+      fetch("https://api.carbonintensity.org.uk/generation")
+      .then(res => res.json())
+      .then(energyData => {
+        let item = []
+        for (let i = 0; i<energyData.data.generationmix.length; i++){
+          const fuel = energyData.data.generationmix[i].fuel
+          const perc = energyData.data.generationmix[i].perc
+          item = [fuel, perc]
+          this.energyData.push(item)
+        }
+      })
+      
+    },
+
+    components:{
+      'user-inputs': UserInputsVue,
+      'display-charts': DisplayVue
+    }
+    
   }
-}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="css" scoped>
+
 </style>
